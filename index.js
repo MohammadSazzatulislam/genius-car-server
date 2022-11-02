@@ -19,6 +19,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const Servicess = client.db("geniousCar").collection("servicess");
+    const Orders = client.db('geniousCar').collection('orders')
 
     app.get("/servicess", async (req, res) => {
       const quary = {};
@@ -33,6 +34,53 @@ async function run() {
       const singleServices = await Servicess.findOne(quary);
       res.send(singleServices);
     });
+
+
+    // order api
+
+    app.get('/orders',async (req,res)=>{
+
+      let query = {}
+      if (req.query.email) {
+        query = {
+          email: req.query.email,
+        };
+      }
+      const order = Orders.find(query);
+      const result = await order.toArray()
+      res.send(result)  
+    })
+
+
+    app.delete('/orders/:id', async(req, res) => {
+      const id = req.params.id
+      const quary = { _id: ObjectId(id) }
+      const result = await Orders.deleteOne(quary)
+      res.send(result)
+    })
+
+    app.patch('/orders/:id', async (req, res) => {
+      const id = req.params.id
+      const status = req.body.status
+      const filter = { _id: ObjectId(id) }
+      const updateOrder = {
+        $set:{
+          status : status
+        }
+    }
+      const result = await Orders.updateOne(filter, updateOrder)
+      res.send(result)
+    })
+
+
+
+    app.post('/orders', async(req, res) => {
+      const order = req.body
+      const result = await Orders.insertOne(order)
+      res.send(result)
+    })
+
+
   } finally {
   }
 }
