@@ -37,6 +37,10 @@ async function run() {
     const Servicess = client.db("geniousCar").collection("servicess");
     const Orders = client.db("geniousCar").collection("orders");
 
+    app.get('/', (req, res) => {
+      res.send('genius car server is running')
+    })
+
     app.get("/servicess", async (req, res) => {
       const quary = {};
       const cursor = Servicess.find(quary);
